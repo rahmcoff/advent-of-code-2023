@@ -207,19 +207,37 @@ let time1 = clock.measure {
 
 print(time1)
 
-var currentState: Field = parseField(getInput())
-var loopCheck = [String: Int]()
-
-for rep in 0..<10000 {
-    currentState.tiltNorth()
-    currentState.tiltWest()
-    currentState.tiltSouth()
-    currentState.tiltEast()
-    let desc = currentState.description
-    if let previousLoop = loopCheck[desc] {
-        print("We have a loop! \(previousLoop) is the same as \(rep)")
-        break
-    } else {
-        loopCheck[desc] = rep
+let timeBillion = clock.measure {
+    var currentState: Field = parseField(getInput())
+    var loopCheck = [String: Int]()
+    var loopStart = 0
+    var loopEnd = 0
+    
+    for rep in 0..<100000 {
+        currentState.tiltNorth()
+        currentState.tiltWest()
+        currentState.tiltSouth()
+        currentState.tiltEast()
+        let desc = currentState.description
+        if let previousLoop = loopCheck[desc] {
+            print("We have a loop! \(previousLoop) is the same as \(rep)")
+            loopStart = previousLoop
+            loopEnd = rep
+            break
+        } else {
+            loopCheck[desc] = rep
+        }
     }
+    
+    let necessaryLoops = (1000000000 - loopStart) % (loopEnd - loopStart) + loopStart
+    
+    currentState = parseField(getInput())
+    for _ in 0..<necessaryLoops {
+        currentState.tiltNorth()
+        currentState.tiltWest()
+        currentState.tiltSouth()
+        currentState.tiltEast()
+    }
+    print(northLoad(currentState))
 }
+print(timeBillion)
